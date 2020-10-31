@@ -10,6 +10,9 @@ from django.db.models import Q
 from .models import Question, Answer
 from .forms import QuestionAddForm, AnswerAddForm
 
+def handler_404(request, exception):
+    return render(request, 'questions/404.html', status=404)
+
 
 class QuestionList(ListView):
     paginate_by = 3
