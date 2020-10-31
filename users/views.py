@@ -1,14 +1,14 @@
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.views import LoginView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View
+from django.views.generic import View, UpdateView
 
 from .forms import UserRegisterForm
-
+from .models import UserProfile
 
 class UserLoginView(LoginView):
     template_name = 'users/login.html'
@@ -52,9 +52,12 @@ class UserRegisterView(FormView):
         return super().form_valid(form)
 
 
-class UserProfileView(LoginRequiredMixin, View):
+class UserProfileView(LoginRequiredMixin, UpdateView):
+    template_name = 'users/profile.html'
+    model = UserProfile
+    fields = ('email', 'avatar')
+    success_url = reverse_lazy('users:profile')
 
-    def get(self, request):
-        ctx = {'user': request.user}
-        return render(request, 'users/profile.html', ctx)
+    def get_object(self, queryset=None):
+        return get_object_or_404(UserProfile, pk=self.request.user.id)
 
