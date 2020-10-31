@@ -1,0 +1,39 @@
+{% extends  'layout.html' %}
+{% load paginate %}
+
+{% block left_column %}
+<div class="row">
+    <div class="col">
+        <h1> All Questions </h1>
+    </div>
+
+    <div class="col">
+
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">New</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Hot</a>
+            </li>
+        </ul>
+
+    </div>
+
+</div>
+
+
+<div class="row">
+    <div class="col">
+        {% for question in page_obj %}
+        {% include 'questions/index_view.html' with question=question %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- paginator -->
+<div class="row">
+    {% paginate %}
+</div>
+
+{% endblock %}

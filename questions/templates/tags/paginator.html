@@ -1,0 +1,16 @@
+{% load url_replace %}
+{% if page_obj.paginator.num_pages > 1 %}
+<nav aria-label="">
+    <ul class="pagination">
+    {% for i in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+            {% if page_obj.number == i %}
+            <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+            {% else %}
+            <a class="page-link" href="?{% url_replace page=i %}">{{ i }}</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+</nav>
+{% endif %}

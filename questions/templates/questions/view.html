@@ -1,0 +1,79 @@
+{% extends  'layout.html' %}
+{% load crispy_forms_tags %}
+{% load paginate %}
+{% load url_replace %}
+
+{% block left_column %}
+<div class="row">
+    <div class="col">
+        <h1> {{ question.title }} </h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-1 text-center">
+        {% include 'questions/votes.html' %}
+    </div>
+
+    <div class="col-11">
+        <p>{{ question.content|linebreaksbr }}</p>
+
+        <div class="row">
+            <div class="col-4">
+                {% for tag in question.tags.all %}
+                <a href="{% url 'questions:search' %}?t={{ tag.name }}" class="badge badge-info">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+
+            <div class="col-8 text-right">
+                <small><span class="text-info">{{ question.user.username }}</span> asked
+                    {{ question.date_pub|timesince }} ago</small>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<hr class="mb-3"/>
+
+<div class="row">
+    <div class="col">
+        <h2>Answers</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        {% for answer in page_obj %}
+        {% include 'questions/answer_view.html'%}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- paginator -->
+<div class="row">
+    {% paginate %}
+</div>
+
+{% load crispy_forms_tags %}
+
+{% if request.user.is_authenticated %}
+<div class="row">
+    <div class="col">
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary btn-block col-3">Post Your Answer</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info" role="alert">
+    For answer a question, you must either
+    <a href="{% url 'users:register' %}" class="alert-link">sign up</a> or
+    <a href="{% url 'users:login' %}" class="alert-link">log in</a> for an account
+</div>
+{% endif %}
+
+{% endblock %}

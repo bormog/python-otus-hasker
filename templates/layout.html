@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8">
+            {% block left_column %}{% endblock %}
+        </div>
+        <div class="col-md-4">
+            {% block right_column %}
+                {% include 'questions/trending.html' %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
