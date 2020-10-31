@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import QuestionList, QuestionCreate, QuestionDetail, QuestionSearch
+from .views import QuestionList, QuestionCreate, QuestionDetail, QuestionSearch, \
+    QuestionAnswerAward
 
 app_name = 'questions'
 
@@ -8,4 +9,5 @@ urlpatterns = [
     path('add/', QuestionCreate.as_view(), name='add'),
     path("<int:pk>/", QuestionDetail.as_view(), name='detail'),
     path("search/", QuestionSearch.as_view(), name='search'),
+    path("<int:pk>/answer/<int:answer_id>/award/", QuestionAnswerAward.as_view(), name='award'),
 ]

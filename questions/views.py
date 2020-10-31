@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
@@ -103,3 +104,15 @@ class QuestionDetail(View):
         ctx['page_obj'] = self.paginate_answers(request, question)
         ctx['form'] = self.form_class()
         return render(request, self.template_name, ctx)
+
+class QuestionAnswerAward(View):
+    def get(self, request, pk, answer_id):
+        is_owned_by_current_user = Question.objects.filter(pk=pk, user=request.user).exists()
+        if is_owned_by_current_user:
+            try:
+                answer = Answer.objects.get(pk=answer_id, question_id=pk)
+                answer.is_right = not answer.is_right
+                answer.save()
+            except Answer.DoesNotExist:
+                pass
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
