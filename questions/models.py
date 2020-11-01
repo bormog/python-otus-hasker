@@ -40,11 +40,11 @@ class Question(models.Model):
 
     @property
     def total_likes(self):
-        return self.likes.count()
+        return 0 #self.likes.count()
 
     @property
     def total_answers(self):
-        return self.answers.count()
+        return 0 #self.answers.count()
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers', default=None)
@@ -62,7 +62,7 @@ class Answer(models.Model):
 
     @property
     def total_likes(self):
-        return self.likes.count()
+        return 0 #self.likes.count()
 
 
 
