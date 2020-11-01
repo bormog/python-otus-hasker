@@ -105,7 +105,7 @@ class QuestionDetail(View):
         ctx['form'] = self.form_class()
         return render(request, self.template_name, ctx)
 
-class QuestionAnswerAward(View):
+class QuestionAnswerAward(LoginRequiredMixin, View):
     def get(self, request, pk, answer_id):
         is_owned_by_current_user = Question.objects.filter(pk=pk, user=request.user).exists()
         if is_owned_by_current_user:

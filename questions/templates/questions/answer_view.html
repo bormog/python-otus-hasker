@@ -2,7 +2,7 @@
     <div class="col">
         <div class="row">
             <div class="col-1 text-center align-items-center justify-content-center">
-                {% include 'questions/votes.html' %}
+                {% include 'questions/votes.html' with obj=answer %}
                 {% include 'questions/award.html' %}
             </div>
 
