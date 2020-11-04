@@ -72,16 +72,18 @@ class QuestionCreate(LoginRequiredMixin, CreateView):
 
 class QuestionDetail(View):
     template_name = 'questions/view.html'
-    paginate_by = settings.ANSWERS_PER_PAGE
     form_class = AnswerAddForm
 
     def get_question(self, pk):
-        return get_object_or_404(Question.objects.select_related('user'), pk=pk)
+        return get_object_or_404(Question.objects.select_related('user').annotate(num_likes=Count('likes', distinct=True)), pk=pk)
 
     def paginate_answers(self, request, question):
         page = request.GET.get('page')
-        answers_list = Answer.objects.annotate(num_likes=Count('likes')).filter(question=question).prefetch_related('user')
-        paginator = Paginator(answers_list, self.paginate_by)
+        answers_list = Answer.objects.filter(question=question).\
+            prefetch_related('user').annotate(num_likes=Count('likes', distinct=True)).\
+            order_by('-num_likes', '-date_pub')
+
+        paginator = Paginator(answers_list, settings.ANSWERS_PER_PAGE)
         return paginator.get_page(page)
 
     def get(self, request, pk):

@@ -28,10 +28,10 @@ class Tag(models.Model):
 class QuestionRelationsQuerySet(models.QuerySet):
 
     def with_num_answers(self):
-        return self.annotate(num_answers=Count('answers'))
+        return self.annotate(num_answers=Count('answers', distinct=True))
 
     def with_num_likes(self):
-        return self.annotate(num_likes=Count('likes'))
+        return self.annotate(num_likes=Count('likes', distinct=True))
 
     def with_tags(self):
         return self.prefetch_related('tags')
@@ -77,13 +77,6 @@ class Question(models.Model):
     def get_absolute_url(self):
         return reverse_lazy('questions:detail', args=[self.pk])
 
-    @property
-    def total_likes(self):
-        return 0 #self.likes.count()
-
-    @property
-    def total_answers(self):
-        return 0 #self.answers.count()
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers', default=None)
