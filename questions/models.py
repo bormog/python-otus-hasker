@@ -1,3 +1,6 @@
+
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from django.db import models, transaction, IntegrityError
 from django.db.models import Count, Sum
 from django.urls import reverse_lazy
@@ -24,21 +27,21 @@ class Like(models.Model):
     class Meta:
         db_table = 'likes'
 
-    def save(self, *args, **kwargs):
-        # todo transaction, check if exists method and callable
-        # todo https://docs.djangoproject.com/en/3.1/ref/signals/#django.db.models.signals.post_save
-        super().save(*args, **kwargs)
-        result = Like.objects.filter(content_type=self.content_type, object_id=self.object_id).\
-                    aggregate(Sum('vote'))
-        content_type = ContentType.objects.get(pk=self.content_type.pk)
-        related_obj = content_type.get_object_for_this_type(pk=self.object_id)
-        related_obj.update_rank(result['vote__sum'])
-
 class Tag(models.Model):
     name = models.CharField(max_length=30, unique=True)
 
     def __str__(self):
         return self.name
+
+
+@receiver(post_save, sender=Like)
+def after_like_save_callback(sender, **kwargs):
+    like_obj = kwargs['instance']
+    content_type = ContentType.objects.get(pk=like_obj.content_type.pk)
+    related_obj = content_type.get_object_for_this_type(pk=like_obj.object_id)
+    rank = Like.objects.filter(content_type=like_obj.content_type, object_id=like_obj.object_id). \
+        aggregate(rank=Sum('vote'))['rank']
+    related_obj.update_rank(rank)
 
 
 class RankedModel(models.Model):
@@ -49,10 +52,10 @@ class RankedModel(models.Model):
         abstract = True
 
     def update_rank(self, rank):
+        if not self.pk:
+            return
         self.rank = rank
         return self.save()
-
-
 
 class QuestionRelationsQuerySet(models.QuerySet):
 
