@@ -1,15 +1,15 @@
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator
-
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, ListView, CreateView
-from django.db.models import Q, Count, Prefetch
 
-from .models import Question, Answer
 from .forms import QuestionAddForm, AnswerAddForm
+from .models import Question, Answer
+
 
 def handler_404(request, exception):
     return render(request, 'questions/404.html', status=404)
@@ -24,17 +24,18 @@ class QuestionList(ListView):
     def get_ordering(self):
         order_by = self.request.GET.get('order_by', None)
         if order_by == 'rank':
-            ordering = ('-rank', '-date_pub', )
+            ordering = ('-rank', '-date_pub',)
         else:
-            ordering = ('-date_pub', )
+            ordering = ('-date_pub',)
         return ordering
+
 
 class QuestionSearch(ListView):
     paginate_by = settings.QUESTIONS_PER_PAGE
     model = Question
     template_name = 'questions/search.html'
     queryset = Question.objects_related.num_answers().tags().users()
-    ordering = ('-rank', '-date_pub', )
+    ordering = ('-rank', '-date_pub',)
 
     def get_queryset(self):
         queryset = self.queryset
@@ -79,8 +80,8 @@ class QuestionDetail(View):
 
     def paginate_answers(self, request, question):
         page = request.GET.get('page')
-        answers_list = Answer.objects.filter(question=question).\
-            prefetch_related('user').\
+        answers_list = Answer.objects.filter(question=question). \
+            prefetch_related('user'). \
             order_by('-rank', '-date_pub')
 
         paginator = Paginator(answers_list, settings.ANSWERS_PER_PAGE)
@@ -115,6 +116,7 @@ class QuestionDetail(View):
         ctx['page_obj'] = self.paginate_answers(request, question)
         ctx['form'] = self.form_class()
         return render(request, self.template_name, ctx)
+
 
 class QuestionAnswerAward(LoginRequiredMixin, View):
     def get(self, request, pk, answer_id):

@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 
 from .models import Question, Tag, Answer
 
+
 class CommaSeparatedTextField(forms.Field):
     widget = forms.TextInput()
 
@@ -19,6 +20,7 @@ class CommaSeparatedTextField(forms.Field):
                 raise ValidationError('Max 3 tags is allowed')
         return tags
 
+
 class QuestionAddForm(forms.ModelForm):
     title = forms.CharField()
     content = forms.CharField(widget=forms.Textarea, label='Your Question')
@@ -28,8 +30,10 @@ class QuestionAddForm(forms.ModelForm):
         model = Question
         fields = ('title', 'content', 'tags')
 
+
 class AnswerAddForm(forms.ModelForm):
     content = forms.CharField(widget=forms.Textarea, label='Your Answer')
+
     class Meta:
         model = Answer
-        fields = ('content', )
+        fields = ('content',)

@@ -1,12 +1,10 @@
-
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.db import models, transaction, IntegrityError
-from django.db.models import Count, Sum
-from django.urls import reverse_lazy
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
+from django.db.models import Count, Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.urls import reverse_lazy
 
 from users.models import UserProfile
 
@@ -23,6 +21,7 @@ class Vote(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     vote = models.SmallIntegerField(choices=VOTE_CHOICES)
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -53,6 +52,10 @@ class RankedVoteModel(models.Model):
             return
         self.rank = rank
         return self.save()
+
+    def vote(self, user, vote):
+        pass
+
 
 class QuestionRelationsQuerySet(models.QuerySet):
 
@@ -112,6 +115,3 @@ class Answer(RankedVoteModel):
 
     def __str__(self):
         return self.content
-
-
-
