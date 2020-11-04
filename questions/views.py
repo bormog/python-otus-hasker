@@ -16,13 +16,21 @@ def handler_404(request, exception):
 
 
 class QuestionList(ListView):
-    paginate_by = settings.PAGINATION_LIMIT
+    paginate_by = settings.QUESTIONS_PER_PAGE
     model = Question
     template_name = 'questions/index.html'
-    queryset = Question.objects_related.with_num_answers().with_tags().with_users().order_by('-date_pub')
+    queryset = Question.objects_related.with_num_answers().with_num_likes().with_tags().with_users()
+
+    def get_ordering(self):
+        order_by = self.request.GET.get('order_by', None)
+        if order_by == 'likes':
+            ordering = ('-num_likes', '-date_pub' )
+        else:
+            ordering = ('-date_pub', )
+        return ordering
 
 class QuestionSearch(ListView):
-    paginate_by = settings.PAGINATION_LIMIT
+    paginate_by = settings.QUESTIONS_PER_PAGE
     model = Question
     template_name = 'questions/index.html'
     queryset = Question.objects_related.with_num_answers().with_tags().with_users().order_by('-date_pub')
@@ -63,7 +71,7 @@ class QuestionCreate(LoginRequiredMixin, CreateView):
 
 class QuestionDetail(View):
     template_name = 'questions/view.html'
-    paginate_by = settings.PAGINATION_LIMIT
+    paginate_by = settings.ANSWERS_PER_PAGE
     form_class = AnswerAddForm
 
     def get_question(self, pk):

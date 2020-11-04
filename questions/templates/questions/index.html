@@ -1,4 +1,5 @@
 {% extends  'layout.html' %}
+{% load url_replace %}
 {% load paginate %}
 
 {% block left_column %}
@@ -11,10 +12,10 @@
 
         <ul class="nav nav-tabs mb-3">
             <li class="nav-item">
-                <a class="nav-link active" href="#">New</a>
+                <a class="nav-link {% if not request.GET.order_by %}active{% endif %}" href="?{% url_replace order_by='' %}">New</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Hot</a>
+                <a class="nav-link {% if request.GET.order_by == 'likes' %}active{% endif %}" href="?{% url_replace order_by='likes' %}">Hot</a>
             </li>
         </ul>
 
