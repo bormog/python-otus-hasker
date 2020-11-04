@@ -1,7 +1,16 @@
 from django.contrib import admin
 from .models import Question, Tag, Answer, Like
 
-admin.site.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('title', 'user', 'date_pub', 'rank')
+
+class AnswerAdmin(admin.ModelAdmin):
+    list_display = ('content', 'question', 'user', 'is_right', 'date_pub', 'rank')
+
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ('vote', 'user', 'content_type', 'object_id', 'content_object')
+
+admin.site.register(Question, QuestionAdmin)
 admin.site.register(Tag)
-admin.site.register(Answer)
-admin.site.register(Like)
+admin.site.register(Answer, AnswerAdmin)
+admin.site.register(Like, LikeAdmin)

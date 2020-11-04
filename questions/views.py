@@ -19,12 +19,12 @@ class QuestionList(ListView):
     paginate_by = settings.QUESTIONS_PER_PAGE
     model = Question
     template_name = 'questions/index.html'
-    queryset = Question.objects_related.with_num_answers().with_num_likes().with_tags().with_users()
+    queryset = Question.objects_related.with_num_answers().with_tags().with_users()
 
     def get_ordering(self):
         order_by = self.request.GET.get('order_by', None)
         if order_by == 'likes':
-            ordering = ('-num_likes', '-date_pub', )
+            ordering = ('-rank', '-date_pub', )
         else:
             ordering = ('-date_pub', )
         return ordering
@@ -33,8 +33,8 @@ class QuestionSearch(ListView):
     paginate_by = settings.QUESTIONS_PER_PAGE
     model = Question
     template_name = 'questions/search.html'
-    queryset = Question.objects_related.with_num_answers().with_num_likes().with_tags().with_users()
-    ordering = ('-num_likes', '-date_pub', )
+    queryset = Question.objects_related.with_num_answers().with_tags().with_users()
+    ordering = ('-rank', '-date_pub', )
 
     def get_queryset(self):
         queryset = self.queryset
@@ -75,13 +75,13 @@ class QuestionDetail(View):
     form_class = AnswerAddForm
 
     def get_question(self, pk):
-        return get_object_or_404(Question.objects.select_related('user').annotate(num_likes=Count('likes', distinct=True)), pk=pk)
+        return get_object_or_404(Question.objects.select_related('user'), pk=pk)
 
     def paginate_answers(self, request, question):
         page = request.GET.get('page')
         answers_list = Answer.objects.filter(question=question).\
-            prefetch_related('user').annotate(num_likes=Count('likes', distinct=True)).\
-            order_by('-num_likes', '-date_pub')
+            prefetch_related('user').\
+            order_by('-rank', '-date_pub')
 
         paginator = Paginator(answers_list, settings.ANSWERS_PER_PAGE)
         return paginator.get_page(page)
