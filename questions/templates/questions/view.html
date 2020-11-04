@@ -12,7 +12,7 @@
 
 <div class="row mb-4">
     <div class="col-1 text-center">
-        {% include 'questions/votes.html' with obj=question %}
+        {% include 'questions/include/votes.html' with obj=question %}
     </div>
 
     <div class="col-11">
@@ -46,7 +46,7 @@
 <div class="row">
     <div class="col">
         {% for answer in page_obj %}
-        {% include 'questions/answer_view.html'%}
+        {% include 'questions/include/answer_card.html'%}
         {% endfor %}
     </div>
 </div>

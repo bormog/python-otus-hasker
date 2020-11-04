@@ -26,7 +26,7 @@
 <div class="row">
     <div class="col">
         {% for question in page_obj %}
-        {% include 'questions/index_view.html' with question=question %}
+        {% include 'questions/include/question_card.html' with question=question %}
         {% endfor %}
     </div>
 </div>

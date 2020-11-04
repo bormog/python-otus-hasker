@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, ListView, CreateView
-from django.db.models import Q
+from django.db.models import Q, Count, Prefetch
 
 from .models import Question, Answer
 from .forms import QuestionAddForm, AnswerAddForm
@@ -16,16 +16,16 @@ def handler_404(request, exception):
 
 
 class QuestionList(ListView):
-    paginate_by = 3
+    paginate_by = settings.PAGINATION_LIMIT
     model = Question
     template_name = 'questions/index.html'
-    queryset = Question.objects.select_related('user').prefetch_related('tags')
+    queryset = Question.objects_related.with_num_answers().with_tags().with_users().order_by('-date_pub')
 
 class QuestionSearch(ListView):
-    paginate_by = 3
+    paginate_by = settings.PAGINATION_LIMIT
     model = Question
     template_name = 'questions/index.html'
-    queryset = Question.objects.select_related('user').prefetch_related('tags')
+    queryset = Question.objects_related.with_num_answers().with_tags().with_users().order_by('-date_pub')
 
     def get_queryset(self):
         queryset = self.queryset
@@ -63,7 +63,7 @@ class QuestionCreate(LoginRequiredMixin, CreateView):
 
 class QuestionDetail(View):
     template_name = 'questions/view.html'
-    paginate_by = 20
+    paginate_by = settings.PAGINATION_LIMIT
     form_class = AnswerAddForm
 
     def get_question(self, pk):
@@ -71,7 +71,7 @@ class QuestionDetail(View):
 
     def paginate_answers(self, request, question):
         page = request.GET.get('page')
-        answers_list = Answer.objects.filter(question=question).select_related('user')
+        answers_list = Answer.objects.annotate(num_likes=Count('likes')).filter(question=question).prefetch_related('user')
         paginator = Paginator(answers_list, self.paginate_by)
         return paginator.get_page(page)
 

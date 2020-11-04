@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from django.urls import reverse_lazy
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -6,6 +7,8 @@ from django.contrib.contenttypes.fields import GenericRelation
 
 from users.models import UserProfile
 
+
+# https://apirobot.me/posts/how-to-implement-liking-in-django
 class Like(models.Model):
     user = models.ForeignKey(UserProfile, related_name='likes', on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -21,6 +24,39 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+
+class QuestionRelationsQuerySet(models.QuerySet):
+
+    def with_num_answers(self):
+        return self.annotate(num_answers=Count('answers'))
+
+    def with_num_likes(self):
+        return self.annotate(num_likes=Count('likes'))
+
+    def with_tags(self):
+        return self.prefetch_related('tags')
+
+    def with_users(self):
+        return self.prefetch_related('user')
+
+
+class QuestionRelationsManager(models.Manager):
+    def get_queryset(self):
+        return QuestionRelationsQuerySet(self.model, using=self._db)
+
+    def with_num_answers(self):
+        return self.get_queryset().with_num_answers()
+
+    def with_num_likes(self):
+        return self.get_queryset().with_num_likes()
+
+    def with_tags(self):
+        return self.self.get_queryset().with_tags()
+
+    def with_users(self):
+        return self.self.get_queryset().with_users()
+
+
 class Question(models.Model):
     title = models.CharField(max_length=256)
     content = models.TextField(max_length=1024)
@@ -28,6 +64,9 @@ class Question(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='questions')
     tags = models.ManyToManyField(Tag, blank=True)
     likes = GenericRelation(Like)
+
+    objects = models.Manager()
+    objects_related = QuestionRelationsManager()
 
     class Meta:
         ordering = ['-date_pub']
