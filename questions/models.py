@@ -11,21 +11,18 @@ from django.contrib.contenttypes.fields import GenericRelation
 from users.models import UserProfile
 
 
-class Like(models.Model):
+class Vote(models.Model):
     VOTE_LIKE = 1
     VOTE_DISLIKE = -1
     VOTE_CHOICES = (
         (VOTE_LIKE, 'Like'),
         (VOTE_DISLIKE, 'Dislike')
     )
-    user = models.ForeignKey(UserProfile, related_name='likes', on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, related_name='votes', on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     vote = models.SmallIntegerField(choices=VOTE_CHOICES)
-
-    class Meta:
-        db_table = 'likes'
 
 class Tag(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -34,18 +31,18 @@ class Tag(models.Model):
         return self.name
 
 
-@receiver(post_save, sender=Like)
+@receiver(post_save, sender=Vote)
 def after_like_save_callback(sender, **kwargs):
     like_obj = kwargs['instance']
     content_type = ContentType.objects.get(pk=like_obj.content_type.pk)
     related_obj = content_type.get_object_for_this_type(pk=like_obj.object_id)
-    rank = Like.objects.filter(content_type=like_obj.content_type, object_id=like_obj.object_id). \
+    rank = Vote.objects.filter(content_type=like_obj.content_type, object_id=like_obj.object_id). \
         aggregate(rank=Sum('vote'))['rank']
     related_obj.update_rank(rank)
 
 
-class RankedModel(models.Model):
-    likes = GenericRelation(Like)
+class RankedVoteModel(models.Model):
+    votes = GenericRelation(Vote)
     rank = models.IntegerField(blank=True, default=0)
 
     class Meta:
@@ -83,7 +80,7 @@ class QuestionRelationsManager(models.Manager):
         return self.self.get_queryset().users()
 
 
-class Question(RankedModel):
+class Question(RankedVoteModel):
     title = models.CharField(max_length=256)
     content = models.TextField(max_length=1024)
     date_pub = models.DateTimeField(auto_now_add=True)
@@ -103,7 +100,7 @@ class Question(RankedModel):
         return reverse_lazy('questions:detail', args=[self.pk])
 
 
-class Answer(RankedModel):
+class Answer(RankedVoteModel):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers', default=None)
     content = models.TextField(max_length=1024)
     date_pub = models.DateTimeField(auto_now_add=True)
