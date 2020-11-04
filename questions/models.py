@@ -33,10 +33,10 @@ class Tag(models.Model):
 
 @receiver(post_save, sender=Vote)
 def after_like_save_callback(sender, **kwargs):
-    like_obj = kwargs['instance']
-    content_type = ContentType.objects.get(pk=like_obj.content_type.pk)
-    related_obj = content_type.get_object_for_this_type(pk=like_obj.object_id)
-    rank = Vote.objects.filter(content_type=like_obj.content_type, object_id=like_obj.object_id). \
+    vote_obj = kwargs['instance']
+    content_type = ContentType.objects.get(pk=vote_obj.content_type.pk)
+    related_obj = content_type.get_object_for_this_type(pk=vote_obj.object_id)
+    rank = Vote.objects.filter(content_type=vote_obj.content_type, object_id=vote_obj.object_id). \
         aggregate(rank=Sum('vote'))['rank']
     related_obj.update_rank(rank)
 
