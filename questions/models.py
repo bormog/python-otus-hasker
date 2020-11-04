@@ -59,13 +59,13 @@ class RankedModel(models.Model):
 
 class QuestionRelationsQuerySet(models.QuerySet):
 
-    def with_num_answers(self):
+    def num_answers(self):
         return self.annotate(num_answers=Count('answers', distinct=True))
 
-    def with_tags(self):
+    def tags(self):
         return self.prefetch_related('tags')
 
-    def with_users(self):
+    def users(self):
         return self.prefetch_related('user')
 
 
@@ -73,14 +73,14 @@ class QuestionRelationsManager(models.Manager):
     def get_queryset(self):
         return QuestionRelationsQuerySet(self.model, using=self._db)
 
-    def with_num_answers(self):
-        return self.get_queryset().with_num_answers()
+    def num_answers(self):
+        return self.get_queryset().num_answers()
 
-    def with_tags(self):
-        return self.self.get_queryset().with_tags()
+    def tags(self):
+        return self.self.get_queryset().tags()
 
-    def with_users(self):
-        return self.self.get_queryset().with_users()
+    def users(self):
+        return self.self.get_queryset().users()
 
 
 class Question(RankedModel):

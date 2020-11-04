@@ -19,11 +19,11 @@ class QuestionList(ListView):
     paginate_by = settings.QUESTIONS_PER_PAGE
     model = Question
     template_name = 'questions/index.html'
-    queryset = Question.objects_related.with_num_answers().with_tags().with_users()
+    queryset = Question.objects_related.num_answers().tags().users()
 
     def get_ordering(self):
         order_by = self.request.GET.get('order_by', None)
-        if order_by == 'likes':
+        if order_by == 'rank':
             ordering = ('-rank', '-date_pub', )
         else:
             ordering = ('-date_pub', )
@@ -33,7 +33,7 @@ class QuestionSearch(ListView):
     paginate_by = settings.QUESTIONS_PER_PAGE
     model = Question
     template_name = 'questions/search.html'
-    queryset = Question.objects_related.with_num_answers().with_tags().with_users()
+    queryset = Question.objects_related.num_answers().tags().users()
     ordering = ('-rank', '-date_pub', )
 
     def get_queryset(self):
