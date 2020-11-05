@@ -129,3 +129,28 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
             except Answer.DoesNotExist:
                 pass
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class VoteView(LoginRequiredMixin, View):
+
+    def get(self, request,  object_type, object_id, vote):
+        object_type_map = {
+            'question': Question,
+            'answer': Answer
+        }
+        vote_map = {
+            'like': 1,
+            'dislike': -1
+        }
+        model_cls = object_type_map.get(object_type)
+        if not model_cls:
+            raise Exception('Object Type must be question or answer')
+        vote_value = vote_map.get(vote)
+        if not vote_value:
+            raise Exception('Vote must be -1 or 1')
+        try:
+            model_obj = model_cls.objects.get(pk=object_id)
+            model_obj.vote(request.user, vote_value)
+        except model_cls.DoesNotExist:
+            raise Exception('Object witch this object_id not exists')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

@@ -54,7 +54,14 @@ class RankedVoteModel(models.Model):
         return self.save()
 
     def vote(self, user, vote):
-        pass
+        content_type = ContentType.objects.get(app_label=self._meta.app_label, model=self._meta.model_name)
+        _vote = Vote()
+        _vote.user = user
+        _vote.vote = vote
+        _vote.object_id = self.pk
+        _vote.content_type = content_type
+        return _vote.save()
+
 
 
 class QuestionRelationsQuerySet(models.QuerySet):
