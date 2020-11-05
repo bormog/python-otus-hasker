@@ -150,9 +150,9 @@ class VoteView(LoginRequiredMixin, View):
                 model_object = model_cls.objects.get(pk=object_id)
                 model_object.vote(request.user, vote)
             except model_cls.DoesNotExist:
-                return HttpResponseBadRequest('Invalid vote value')
+                return HttpResponseBadRequest('Invalid object id')
         except LookupError:
-            return HttpResponseBadRequest('Invalid vote value')
+            return HttpResponseBadRequest('Invalid object name')
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
