@@ -1,14 +1,16 @@
 from django.conf import settings
+from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView, CreateView
 
-from .forms import QuestionAddForm, AnswerAddForm
-from .models import Question, Answer
+from .forms import QuestionAddForm, AnswerAddForm, VoteForm
+from .models import Question, Answer, Vote
 
 
 def handler_404(request, exception):
@@ -133,24 +135,18 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
 
 class VoteView(LoginRequiredMixin, View):
 
-    def get(self, request,  object_type, object_id, vote):
-        object_type_map = {
-            'question': Question,
-            'answer': Answer
-        }
+    def get(self, request, object_name, object_id, vote):
         vote_map = {
-            'like': 1,
-            'dislike': -1
+            'like': Vote.VOTE_LIKE,
+            'dislike': Vote.VOTE_DISLIKE
         }
-        model_cls = object_type_map.get(object_type)
-        if not model_cls:
-            raise Exception('Object Type must be question or answer')
-        vote_value = vote_map.get(vote)
-        if not vote_value:
-            raise Exception('Vote must be -1 or 1')
-        try:
-            model_obj = model_cls.objects.get(pk=object_id)
-            model_obj.vote(request.user, vote_value)
-        except model_cls.DoesNotExist:
-            raise Exception('Object witch this object_id not exists')
+        vote = vote_map.get(vote)
+        if not vote:
+            return HttpResponseBadRequest('Invalid vote value')
+        app_label = request.resolver_match.app_name
+        model_cls = apps.get_model(app_label, object_name)
+        model_object = model_cls.objects.get(pk=object_id)
+        model_object.vote(request.user, vote)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+

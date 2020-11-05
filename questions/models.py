@@ -54,13 +54,9 @@ class RankedVoteModel(models.Model):
         return self.save()
 
     def vote(self, user, vote):
-        content_type = ContentType.objects.get(app_label=self._meta.app_label, model=self._meta.model_name)
-        _vote = Vote()
-        _vote.user = user
-        _vote.vote = vote
-        _vote.object_id = self.pk
-        _vote.content_type = content_type
-        return _vote.save()
+        content_type = ContentType.objects.get_by_natural_key(self._meta.app_label, self._meta.model_name)
+        vote_obj = Vote(user=user, vote=vote, object_id=self.pk, content_type=content_type)
+        return vote_obj.save()
 
 
 
