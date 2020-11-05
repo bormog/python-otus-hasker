@@ -135,6 +135,7 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
 
 class VoteView(LoginRequiredMixin, View):
 
+    # todo probably forms will works ok here
     def get(self, request, object_name, object_id, vote):
         votes_map = {
             'like': Vote.VOTE_LIKE,

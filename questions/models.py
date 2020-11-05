@@ -2,13 +2,14 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Count, Sum
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse_lazy
 
 from users.models import UserProfile
 
-
+# todo move this to another app
+# todo set choices on content_type if possible
 class Vote(models.Model):
     VOTE_LIKE = 1
     VOTE_DISLIKE = -1
@@ -29,15 +30,25 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+# todo move this to model or manager or ?
+def on_vote_change_callback(vote):
+    content_type = ContentType.objects.get(pk=vote.content_type.pk)
+    related_obj = content_type.get_object_for_this_type(pk=vote.object_id)
+    rank = Vote.objects.filter(content_type=vote.content_type, object_id=vote.object_id). \
+        aggregate(rank=Sum('vote'))['rank']
+    related_obj.update_rank(rank)
 
+# todo move this in apps.ready
 @receiver(post_save, sender=Vote)
 def after_like_save_callback(sender, **kwargs):
     vote_obj = kwargs['instance']
-    content_type = ContentType.objects.get(pk=vote_obj.content_type.pk)
-    related_obj = content_type.get_object_for_this_type(pk=vote_obj.object_id)
-    rank = Vote.objects.filter(content_type=vote_obj.content_type, object_id=vote_obj.object_id). \
-        aggregate(rank=Sum('vote'))['rank']
-    related_obj.update_rank(rank)
+    on_vote_change_callback(vote_obj)
+
+# todo move this in apps.ready
+@receiver(post_delete, sender=Vote)
+def after_like_delete_callback(sender, **kwargs):
+    vote_obj = kwargs['instance']
+    on_vote_change_callback(vote_obj)
 
 
 class RankedVoteModel(models.Model):
@@ -50,13 +61,31 @@ class RankedVoteModel(models.Model):
     def update_rank(self, rank):
         if not self.pk:
             return
-        self.rank = rank
+        self.rank = rank or 0
         return self.save()
 
     def vote(self, user, vote):
+        """
+        example: +
+        if user not voted:
+            set vote (+)
+        else:
+            if previous_vote == +:
+                delete vote (+)
+            elif previous_vote == -:
+                update vote (- => +)
+        """
         content_type = ContentType.objects.get_by_natural_key(self._meta.app_label, self._meta.model_name)
-        vote_obj = Vote(user=user, vote=vote, object_id=self.pk, content_type=content_type)
-        return vote_obj.save()
+        try:
+            previous = Vote.objects.get(user=user, object_id=self.pk, content_type=content_type)
+            if previous.vote == vote:
+                previous.delete()
+            else:
+                previous.vote = vote
+                previous.save()
+        except Vote.DoesNotExist:
+            vote_obj = Vote(user=user, object_id=self.pk, content_type=content_type, vote=vote)
+            vote_obj.save()
 
 
 
