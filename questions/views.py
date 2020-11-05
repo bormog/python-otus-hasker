@@ -136,17 +136,24 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
 class VoteView(LoginRequiredMixin, View):
 
     def get(self, request, object_name, object_id, vote):
-        vote_map = {
+        votes_map = {
             'like': Vote.VOTE_LIKE,
             'dislike': Vote.VOTE_DISLIKE
         }
-        vote = vote_map.get(vote)
+        vote = votes_map.get(vote)
         if not vote:
             return HttpResponseBadRequest('Invalid vote value')
         app_label = request.resolver_match.app_name
-        model_cls = apps.get_model(app_label, object_name)
-        model_object = model_cls.objects.get(pk=object_id)
-        model_object.vote(request.user, vote)
+        try:
+            model_cls = apps.get_model(app_label, object_name)
+            try:
+                model_object = model_cls.objects.get(pk=object_id)
+                model_object.vote(request.user, vote)
+            except model_cls.DoesNotExist:
+                return HttpResponseBadRequest('Invalid vote value')
+        except LookupError:
+            return HttpResponseBadRequest('Invalid vote value')
+
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
