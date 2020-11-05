@@ -11,11 +11,11 @@ from users.models import UserProfile
 # todo move this to another app
 # todo set choices on content_type if possible
 class Vote(models.Model):
-    VOTE_LIKE = 1
-    VOTE_DISLIKE = -1
+    VOTE_UP = 1
+    VOTE_DOWN = -1
     VOTE_CHOICES = (
-        (VOTE_LIKE, 'Like'),
-        (VOTE_DISLIKE, 'Dislike')
+        (VOTE_UP, 'Vote Up'),
+        (VOTE_DOWN, 'Vote Down')
     )
     user = models.ForeignKey(UserProfile, related_name='votes', on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -30,7 +30,7 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-# todo move this to model or manager or ?
+# todo move this to model or manager or ? https://www.dabapps.com/blog/higher-level-query-api-django-orm/
 def on_vote_change_callback(vote):
     content_type = ContentType.objects.get(pk=vote.content_type.pk)
     related_obj = content_type.get_object_for_this_type(pk=vote.object_id)
@@ -66,7 +66,6 @@ class RankedVoteModel(models.Model):
 
     def vote(self, user, vote):
         """
-        example: +
         if user not voted:
             set vote (+)
         else:

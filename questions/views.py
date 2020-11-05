@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView, CreateView
 
-from .forms import QuestionAddForm, AnswerAddForm, VoteForm
+from .forms import QuestionAddForm, AnswerAddForm
 from .models import Question, Answer, Vote
 
 
@@ -138,8 +138,8 @@ class VoteView(LoginRequiredMixin, View):
     # todo probably forms will works ok here
     def get(self, request, object_name, object_id, vote):
         votes_map = {
-            'like': Vote.VOTE_LIKE,
-            'dislike': Vote.VOTE_DISLIKE
+            'up': Vote.VOTE_UP,
+            'down': Vote.VOTE_DOWN
         }
         vote = votes_map.get(vote)
         if not vote:
