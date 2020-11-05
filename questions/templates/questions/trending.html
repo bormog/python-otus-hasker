@@ -7,7 +7,7 @@
         <ul class="list-unstyled">
             {% for question in trending %}
             <li class="mb-2">
-                <span class="badge badge-info">{{ question.num_answers }}</span>
+                <span class="badge badge-info">{{ question.rank }}</span>
                 <a href="{% url 'questions:detail' question.pk %}">{{ question.title }}</a>
             </li>
             {% endfor %}

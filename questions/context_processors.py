@@ -3,6 +3,6 @@ from django.db.models import Count
 from .models import Question
 
 def trending(request):
-    questions = Question.objects_related.num_answers().order_by('-num_answers', '-date_pub')[0:settings.QUESTIONS_PER_PAGE]
+    questions = Question.objects.filter(rank__gt=0).order_by('-rank', '-date_pub')[0:settings.QUESTIONS_PER_PAGE]
     ctx = {'trending': questions}
     return ctx
