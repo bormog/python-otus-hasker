@@ -16,8 +16,7 @@
             </div>
 
             <div class="col-8 text-right">
-                <small><span class="text-info">{{ question.user.username }}</span> asked
-                    {{ question.date_pub|timesince }} ago</small>
+                {% include 'questions/include/user_asked.html' %}
             </div>
         </div>
 

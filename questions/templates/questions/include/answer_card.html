@@ -14,10 +14,8 @@
         <!-- author -->
         <div class="row">
             <div class="col text-right">
-                <small><span class="text-info">{{ answer.user.username }}</span> answered
-                    {{ answer.date_pub|timesince }} ago</small>
+                {% include 'questions/include/user_answered.html' %}
             </div>
-
         </div>
     </div>
 </div>

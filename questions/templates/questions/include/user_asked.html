@@ -1,0 +1,10 @@
+{% load thumbnail %}
+<div>
+    {% if question.user.avatar %}
+    <img src="{% thumbnail_url question.user.avatar %}" style="width:32px" class="rounded rounded-lg"/>
+    {% endif %}
+    <div>
+        <small><span class="text-info">{{ question.user.username }}</span> asked
+            {{ question.date_pub|timesince }} ago</small>
+    </div>
+</div>
