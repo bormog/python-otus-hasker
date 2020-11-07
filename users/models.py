@@ -10,7 +10,8 @@ class UserProfile(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/')
 
     # todo move size to settings
-    # move to signals-callback
+    # todo move to signals-callback
+    # todo make property User.thumbnail_url
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
         if self.avatar:
