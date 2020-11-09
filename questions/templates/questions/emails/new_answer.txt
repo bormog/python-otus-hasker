@@ -1,0 +1,2 @@
+Hello {{ username }} !
+User {{ user }} posted new answer on your question <a href="#">{{ question }} </a>

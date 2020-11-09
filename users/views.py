@@ -10,9 +10,11 @@ from django.views.generic import View, UpdateView
 from .forms import UserRegisterForm
 from .models import UserProfile
 
+
 class UserLoginView(LoginView):
     template_name = 'users/login.html'
     redirect_authenticated_user = True
+
 
 class UserLogoutView(View):
 
@@ -20,7 +22,6 @@ class UserLogoutView(View):
         if request.user.is_authenticated:
             logout(request)
         return redirect(settings.LOGOUT_REDIRECT_URL)
-
 
 
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
@@ -42,7 +43,6 @@ class UserRegisterView(FormView):
             return redirect(redirect_to)
         return super().dispatch(request, *args, **kwargs)
 
-
     def form_valid(self, form):
         form.save()
         username = form.cleaned_data.get('username')
@@ -60,4 +60,3 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return get_object_or_404(UserProfile, pk=self.request.user.id)
-

@@ -5,6 +5,8 @@ from django.db.models import Count, Sum
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse_lazy
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from users.models import UserProfile
 
@@ -146,3 +148,32 @@ class Answer(RankedVoteModel):
 
     def __str__(self):
         return self.content
+
+
+def on_answer_createad_callback(answer):
+    try:
+        user = UserProfile.objects.get(questions__pk=answer.question_id)
+    except UserProfile.DoesNotExists:
+        pass
+    # todo select or prefect related if possible
+    ctx = {
+        'author': user.username,
+        'user': answer.user.username,
+        'question': answer.question.title
+    }
+
+    html_body = render_to_string('questions/emails/new_answer.html', ctx)
+    txt_body = render_to_string('questions/emails/new_answer.txt', ctx)
+    res = send_mail(subject='Subject Email',
+                    from_email='service@hasker.com',
+                    recipient_list=[user.email],
+                    message=txt_body,
+                    html_message=html_body
+                    )
+
+
+# todo move this in apps.ready
+@receiver(post_save, sender=Answer)
+def after_answer_save_callback(sender, **kwargs):
+    answer_obj = kwargs['instance']
+    on_answer_createad_callback(answer_obj)
