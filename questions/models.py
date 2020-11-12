@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -5,10 +6,9 @@ from django.db.models import Count, Sum
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse_lazy
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 
 from users.models import UserProfile
+
 
 # todo move this to another app
 # todo set choices on content_type if possible
@@ -32,6 +32,7 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+
 # todo move this to model or manager or ? https://www.dabapps.com/blog/higher-level-query-api-django-orm/
 def on_vote_change_callback(vote):
     content_type = ContentType.objects.get(pk=vote.content_type.pk)
@@ -40,11 +41,13 @@ def on_vote_change_callback(vote):
         aggregate(rank=Sum('vote'))['rank']
     related_obj.update_rank(rank)
 
+
 # todo move this in apps.ready
 @receiver(post_save, sender=Vote)
 def after_like_save_callback(sender, **kwargs):
     vote_obj = kwargs['instance']
     on_vote_change_callback(vote_obj)
+
 
 # todo move this in apps.ready
 @receiver(post_delete, sender=Vote)
@@ -87,7 +90,6 @@ class RankedVoteModel(models.Model):
         except Vote.DoesNotExist:
             vote_obj = Vote(user=user, object_id=self.pk, content_type=content_type, vote=vote)
             vote_obj.save()
-
 
 
 class QuestionRelationsQuerySet(models.QuerySet):
@@ -148,32 +150,3 @@ class Answer(RankedVoteModel):
 
     def __str__(self):
         return self.content
-
-
-def on_answer_createad_callback(answer):
-    try:
-        user = UserProfile.objects.get(questions__pk=answer.question_id)
-    except UserProfile.DoesNotExists:
-        pass
-    # todo select or prefect related if possible
-    ctx = {
-        'author': user.username,
-        'user': answer.user.username,
-        'question': answer.question.title
-    }
-
-    html_body = render_to_string('questions/emails/new_answer.html', ctx)
-    txt_body = render_to_string('questions/emails/new_answer.txt', ctx)
-    res = send_mail(subject='Subject Email',
-                    from_email='service@hasker.com',
-                    recipient_list=[user.email],
-                    message=txt_body,
-                    html_message=html_body
-                    )
-
-
-# todo move this in apps.ready
-@receiver(post_save, sender=Answer)
-def after_answer_save_callback(sender, **kwargs):
-    answer_obj = kwargs['instance']
-    on_answer_createad_callback(answer_obj)

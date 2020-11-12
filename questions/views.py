@@ -8,6 +8,8 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpRespon
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView, CreateView
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from .forms import QuestionAddForm, AnswerAddForm
 from .models import Question, Answer, Vote
@@ -111,6 +113,7 @@ class QuestionDetail(View):
             answer.question = question
             answer.user = request.user
             answer.save()
+            self.send_email_about_new_answer(answer, question)
             return redirect(reverse_lazy('questions:detail', kwargs={'pk': pk}))
 
         ctx = dict()
@@ -118,6 +121,26 @@ class QuestionDetail(View):
         ctx['page_obj'] = self.paginate_answers(request, question)
         ctx['form'] = self.form_class()
         return render(request, self.template_name, ctx)
+
+    def send_email_about_new_answer(self, answer, question):
+        ctx = {
+            'author_username': question.user.username,
+            'user_username': answer.user.username,
+            'question': question,
+            'question_link': self.request.build_absolute_uri(reverse_lazy('questions:detail', kwargs={'pk': question.pk}))
+        }
+
+        html_body = render_to_string('questions/emails/new_answer.html', ctx)
+        txt_body = render_to_string('questions/emails/new_answer.txt', ctx)
+        kwargs = {
+            'subject': 'New answer to your question received',
+            'from_email': settings.DEFAULT_FROM_EMAIL,
+            'recipient_list': [question.user.email],
+            'message': txt_body,
+            'html_message': html_body
+        }
+        # todo log this
+        send_mail(**kwargs)
 
 
 class QuestionAnswerAward(LoginRequiredMixin, View):
