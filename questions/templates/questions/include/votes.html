@@ -1,8 +1,15 @@
                 {% load model_name %}
+                {% load votes %}
                 {% model_name obj as obj_model_name %}
+                {% is_user_voted_for model_name=obj_model_name model_pk=obj.pk vote=1 as voted_up %}
+                {% is_user_voted_for model_name=obj_model_name model_pk=obj.pk vote=-1 as voted_down %}
                 <ul class="list-unstyled mb-0">
                     <li>
+                        {% if voted_up %}
+                        <a href="{% url 'questions:vote' obj_model_name obj.pk 'up' %}" class="text-decoration-none text-success" title="Discard my vote">
+                        {% else %}
                         <a href="{% url 'questions:vote' obj_model_name obj.pk 'up' %}" class="text-decoration-none text-secondary" title="Up vote">
+                        {% endif %}
                             <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-chevron-compact-up"
                                  fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
@@ -16,7 +23,11 @@
                     </li>
 
                     <li>
+                        {% if voted_down %}
+                        <a href="{% url 'questions:vote' obj_model_name obj.pk 'down' %}" class="text-decoration-none text-success" title="Discard my vote">
+                        {% else %}
                         <a href="{% url 'questions:vote' obj_model_name obj.pk 'down' %}" class="text-decoration-none text-secondary" title="Down vote">
+                        {% endif %}
                             <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-chevron-compact-down"
                                  fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
