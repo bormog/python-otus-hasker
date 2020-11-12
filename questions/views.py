@@ -157,6 +157,7 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
 
 
 class VoteView(LoginRequiredMixin, View):
+    redirect_field_name = None
 
     # todo probably forms will works ok here
     def get(self, request, object_name, object_id, vote):
@@ -177,7 +178,9 @@ class VoteView(LoginRequiredMixin, View):
                 return HttpResponseBadRequest('Invalid object id')
         except LookupError:
             return HttpResponseBadRequest('Invalid object name')
-
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        if request.path != request.META.get('HTTP_REFERER'):
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            return redirect('/')
 
 
