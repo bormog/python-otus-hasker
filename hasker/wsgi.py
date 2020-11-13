@@ -13,6 +13,6 @@ from django.core.wsgi import get_wsgi_application
 
 load_dotenv()
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hasker.settings.local')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hasker.settings.production')
 
 application = get_wsgi_application()
