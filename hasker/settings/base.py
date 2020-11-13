@@ -73,7 +73,7 @@ WSGI_APPLICATION = 'hasker.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# pip install dj-database-url
 
 DATABASES = {
     'default': {
