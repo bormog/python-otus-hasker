@@ -5,15 +5,20 @@ language: python
 python:
   - "3.7"
 
+seervices:
+  - postgresql
+
 env:
   secret_key=foobar
+  DATABASE_URL=postgres://postgres@localhost/travisdb
 
 install:
   - pip install -r requirements.txt
 
 before_script:
-  - python manage.py migrate --noinput --settings=hasker.settings.local
-  - python manage.py collectstatic  -c --noinput --settings=hasker.settings.local
+  - psql -c 'create database travisdb;' -U postgres
+  - python manage.py migrate --noinput --settings=hasker.settings.production
+  - python manage.py collectstatic  -c --noinput --settings=hasker.settings.production
 
 script:
-  - python manage.py test --settings=hasker.settings.local
+  - python manage.py test --settings=hasker.settings.production
