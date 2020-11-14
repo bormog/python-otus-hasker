@@ -5,7 +5,7 @@ language: python
 python:
   - "3.7"
 
-seervices:
+services:
   - postgresql
 
 env:
