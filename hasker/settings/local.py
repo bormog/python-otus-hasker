@@ -22,7 +22,7 @@ ROOT_URLCONF = 'hasker.urls.local'
 AUTH_PASSWORD_VALIDATORS = []
 
 # Questions App
-QUESTIONS_PER_PAGE = 2
+QUESTIONS_PER_PAGE = 3
 ANSWERS_PER_PAGE = 3
 
 # Email
