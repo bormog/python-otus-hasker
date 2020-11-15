@@ -73,7 +73,6 @@ WSGI_APPLICATION = 'hasker.wsgi.application'
 
 
 # Database
-# pip install dj-database-url
 
 DATABASES = {
     'default': {
@@ -132,6 +131,8 @@ AUTH_USER_MODEL = 'users.UserProfile'
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+USER_IMAGE_DIR = 'avatars'
+USER_IMAGE_SIZE = (200, 200)
 
 # Questions App
 QUESTIONS_PER_PAGE = 20

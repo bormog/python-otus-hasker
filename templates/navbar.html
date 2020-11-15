@@ -1,4 +1,3 @@
-{% load thumbnail %}
 {% url 'users:profile' as profile %}
 {% url 'users:logout' as logout %}
 {% url 'users:login' as login %}
@@ -21,7 +20,7 @@
         <div class="navbar-nav ml-3">
             <a class="nav-link {% if request.path == profile %}active{% endif %}" href="{{ profile }}">
                 {% if request.user.avatar %}
-                <img src="{% thumbnail_url request.user.avatar %}" style="width:20px" class="rounded rounded-lg"/>
+                <img src="{{ request.user.thumbnail_url }}" style="width:20px" class="rounded rounded-lg"/>
                 {% endif %}
                 {{ request.user.username }}
             </a>
