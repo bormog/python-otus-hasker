@@ -1,15 +1,14 @@
-from django.conf import settings
 from django.apps import apps
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.contenttypes.models import ContentType
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView, CreateView
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 
 from .forms import QuestionAddForm, AnswerAddForm
 from .models import Question, Answer, Vote
@@ -127,7 +126,8 @@ class QuestionDetail(View):
             'author_username': question.user.username,
             'user_username': answer.user.username,
             'question': question,
-            'question_link': self.request.build_absolute_uri(reverse_lazy('questions:detail', kwargs={'pk': question.pk}))
+            'question_link': self.request.build_absolute_uri(
+                reverse_lazy('questions:detail', kwargs={'pk': question.pk}))
         }
 
         html_body = render_to_string('questions/emails/new_answer.html', ctx)
@@ -182,5 +182,3 @@ class VoteView(LoginRequiredMixin, View):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             return redirect('/')
-
-
