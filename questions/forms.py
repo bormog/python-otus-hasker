@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Question, Tag, Answer, Vote
+from .models import Question, Tag, Answer
 
 
 class CommaSeparatedTextField(forms.Field):

@@ -1,17 +1,16 @@
-from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView, CreateView
 
 from .forms import QuestionAddForm, AnswerAddForm
-from .models import Question, Answer, Vote
+from .models import Question, Answer
 
 
 def handler_404(request, exception):
@@ -155,29 +154,3 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
                 pass
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
-class VoteView(LoginRequiredMixin, View):
-    redirect_field_name = None
-
-    def get(self, request, object_name, object_id, vote):
-        votes_map = {
-            'up': Vote.VOTE_UP,
-            'down': Vote.VOTE_DOWN
-        }
-        vote = votes_map.get(vote)
-        if not vote:
-            return HttpResponseBadRequest('Invalid vote value')
-        app_label = request.resolver_match.app_name
-        try:
-            model_cls = apps.get_model(app_label, object_name)
-            try:
-                model_object = model_cls.objects.get(pk=object_id)
-                model_object.vote(request.user, vote)
-            except model_cls.DoesNotExist:
-                return HttpResponseBadRequest('Invalid object id')
-        except LookupError:
-            return HttpResponseBadRequest('Invalid object name')
-        if request.path != request.META.get('HTTP_REFERER'):
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        else:
-            return redirect('/')

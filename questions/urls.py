@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 from .views import QuestionList, QuestionCreate, QuestionDetail, QuestionSearch, \
-    QuestionAnswerAward, VoteView
+    QuestionAnswerAward
+from votes.views import VoteView
 
 app_name = 'questions'
 

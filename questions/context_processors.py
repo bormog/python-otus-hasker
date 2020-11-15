@@ -1,5 +1,6 @@
 from django.conf import settings
-from .models import Question, Vote
+from votes.models import Vote
+from .models import Question
 
 
 def trending(request):

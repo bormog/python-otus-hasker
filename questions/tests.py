@@ -2,8 +2,9 @@ import random
 from django.conf import settings
 from django.test import TestCase
 
-from .models import Question, Answer, Vote
+from votes.models import Vote
 from users.models import UserProfile
+from .models import Question, Answer
 
 
 class TestQuestion(TestCase):
