@@ -24,7 +24,7 @@ class CommaSeparatedTextField(forms.Field):
 class QuestionAddForm(forms.ModelForm):
     title = forms.CharField()
     content = forms.CharField(widget=forms.Textarea, label='Your Question')
-    tags = CommaSeparatedTextField(required=False)
+    tags = CommaSeparatedTextField(required=False, help_text='You can specify up to 3 tags using a comma')
 
     class Meta:
         model = Question
