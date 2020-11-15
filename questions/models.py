@@ -10,7 +10,6 @@ from users.models import UserProfile
 
 
 # todo move this to another app
-# todo set choices on content_type if possible
 class Vote(models.Model):
     VOTE_UP = 1
     VOTE_DOWN = -1

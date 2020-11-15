@@ -24,8 +24,6 @@ class UserLogoutView(View):
         return redirect(settings.LOGOUT_REDIRECT_URL)
 
 
-# https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
-
 class UserRegisterView(FormView):
     form_class = UserRegisterForm
     template_name = 'users/register.html'

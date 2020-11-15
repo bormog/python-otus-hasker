@@ -144,6 +144,7 @@ class QuestionDetail(View):
 
 
 class QuestionAnswerAward(LoginRequiredMixin, View):
+
     def get(self, request, pk, answer_id):
         is_owned_by_current_user = Question.objects.filter(pk=pk, user=request.user).exists()
         if is_owned_by_current_user:
@@ -159,7 +160,6 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
 class VoteView(LoginRequiredMixin, View):
     redirect_field_name = None
 
-    # todo probably forms will works ok here
     def get(self, request, object_name, object_id, vote):
         votes_map = {
             'up': Vote.VOTE_UP,
