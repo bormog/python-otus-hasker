@@ -142,5 +142,3 @@ ANSWERS_PER_PAGE = 30
 # Email
 EMAIL_SUBJECT_PREFIX = '[Hasker]'
 DEFAULT_FROM_EMAIL = 'hasker@hasker.com'
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = BASE_DIR / 'media' / 'emails'
