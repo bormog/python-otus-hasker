@@ -31,7 +31,6 @@ class Tag(models.Model):
         return self.name
 
 
-# todo move this to model or manager or ? https://www.dabapps.com/blog/higher-level-query-api-django-orm/
 def on_vote_change_callback(vote):
     content_type = ContentType.objects.get(pk=vote.content_type.pk)
     related_obj = content_type.get_object_for_this_type(pk=vote.object_id)
@@ -40,14 +39,12 @@ def on_vote_change_callback(vote):
     related_obj.update_rank(rank)
 
 
-# todo move this in apps.ready
 @receiver(post_save, sender=Vote)
 def after_like_save_callback(sender, **kwargs):
     vote_obj = kwargs['instance']
     on_vote_change_callback(vote_obj)
 
 
-# todo move this in apps.ready
 @receiver(post_delete, sender=Vote)
 def after_like_delete_callback(sender, **kwargs):
     vote_obj = kwargs['instance']

@@ -139,7 +139,6 @@ class QuestionDetail(View):
             'message': txt_body,
             'html_message': html_body
         }
-        # todo log this
         send_mail(**kwargs)
 
 
