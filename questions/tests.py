@@ -1,9 +1,10 @@
 import random
+
 from django.conf import settings
 from django.test import TestCase
 
-from votes.models import Vote
 from users.models import UserProfile
+from votes.models import Vote
 from .models import Question, Answer
 
 
@@ -95,4 +96,3 @@ class TestContextProcessor(TestCase):
         self.assertIn('votes', response.context)
         self.assertIn('question', response.context['votes'])
         self.assertIn('answer', response.context['votes'])
-

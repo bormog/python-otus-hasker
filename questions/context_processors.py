@@ -1,4 +1,5 @@
 from django.conf import settings
+
 from votes.models import Vote
 from .models import Question
 
@@ -15,7 +16,7 @@ def user_votes(request):
         'answer': {}
     }
     if request.user.is_authenticated:
-        votes = Vote.objects.filter(user=request.user).select_related('content_type').\
+        votes = Vote.objects.filter(user=request.user).select_related('content_type'). \
             values_list('content_type__model', 'object_id', 'vote').all()
         for (model_name, pk, vote) in votes:
             ctx[model_name][pk] = vote

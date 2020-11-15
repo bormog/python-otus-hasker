@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.views.generic import View
 
-
 from .models import Vote
 
 

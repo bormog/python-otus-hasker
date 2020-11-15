@@ -153,4 +153,3 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
             except Answer.DoesNotExist:
                 pass
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-

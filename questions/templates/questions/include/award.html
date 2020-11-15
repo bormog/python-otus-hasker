@@ -1,7 +1,7 @@
 {% if answer.is_right %}
 {% if question.user_id == request.user.pk %}
 <a href="{% url 'questions:award' question.pk answer.pk %}" title="Mark this answer as wrong!">
-{% endif %}
+    {% endif %}
     <span style="font-size: 2em;" class="text-success">
         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-award-fill" fill="currentColor"
              xmlns="http://www.w3.org/2000/svg">
@@ -9,7 +9,7 @@
   <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/>
 </svg>
     </span>
-{% if question.user_id == request.user.pk %}
+    {% if question.user_id == request.user.pk %}
 </a>
 {% endif%}
 

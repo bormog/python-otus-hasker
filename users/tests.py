@@ -2,8 +2,8 @@ import os
 import shutil
 import tempfile
 from io import BytesIO
-from PIL import Image
 
+from PIL import Image
 from django.core.files.base import File
 from django.test import TestCase, override_settings
 from django.urls import reverse_lazy
@@ -54,4 +54,3 @@ class TestModels(TestCase):
                                                avatar=get_image_file())
         self.assertTrue(os.path.exists(user.avatar.path))
         self.assertTrue(os.path.exists(user.thumbnail_path))
-

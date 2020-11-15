@@ -1,8 +1,9 @@
-from PIL import Image, ImageOps
 import os
+
+from PIL import Image, ImageOps
 from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class UserProfile(AbstractUser):
@@ -27,5 +28,3 @@ class UserProfile(AbstractUser):
         if self.avatar:
             file, ext = os.path.splitext(self.avatar.url)
             return '%s.thumbnail%s' % (file, ext)
-
-
