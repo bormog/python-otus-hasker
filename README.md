@@ -1,5 +1,5 @@
 ## Hasker
-Django проект для изучения возможностей джанго.
+Проект для изучения возможностей django.
 Аналог stackoverflow
 
 ### Функционал
@@ -25,18 +25,18 @@ Django проект для изучения возможностей джанг�
  - Автор вопроса получает емейл при публикации нового ответа
  
 ### СI
-Натроена интерация с Travis CI.
+Наcтроена интерация с Travis CI.
 Тесты запускаются автоматически на каждый коммит
 
 
 #### Local Tests
 ```
-python manage.py tests --settings=hasker.settings.local --verbosity=2
+python manage.py test --settings=hasker.settings.local --verbosity=2
 ```
 
 #### Prod Tests
 ```
-python manage.py tests --settings=hasker.settings.production --verbosity=2
+python manage.py test --settings=hasker.settings.production --verbosity=2
 ```
 
 ### Deploy

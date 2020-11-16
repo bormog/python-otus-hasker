@@ -1,3 +1,4 @@
+import logging
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
@@ -11,6 +12,8 @@ from django.views.generic import View, ListView, CreateView
 
 from .forms import QuestionAddForm, AnswerAddForm
 from .models import Question, Answer
+
+logger = logging.getLogger(__name__)
 
 
 def handler_404(request, exception):
@@ -138,7 +141,11 @@ class QuestionDetail(View):
             'message': txt_body,
             'html_message': html_body
         }
-        send_mail(**kwargs)
+        try:
+            send_mail(**kwargs)
+            logger.info('Email to %s successfully sent' % question.user.email)
+        except Exception as e:
+            logger.exception('Email to %s was failed' % question.user.email)
 
 
 class QuestionAnswerAward(LoginRequiredMixin, View):
