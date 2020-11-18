@@ -38,6 +38,9 @@ class QuestionRelationsManager(models.Manager):
     def users(self):
         return self.self.get_queryset().users()
 
+    def trending(self, limit):
+        return self.get_queryset().filter(rank__gt=0).order_by('-rank', '-date_pub')[0:limit]
+
 
 class Question(RankedVoteModel):
     title = models.CharField(max_length=256)
