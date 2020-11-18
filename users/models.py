@@ -1,9 +1,11 @@
 import os
-
+from io import BytesIO
 from PIL import Image, ImageOps
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 
 class UserProfile(AbstractUser):
@@ -13,18 +15,20 @@ class UserProfile(AbstractUser):
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
         if self.avatar:
-            image = Image.open(self.avatar.path)
+            buffer = BytesIO()
+            image = Image.open(self.avatar)
             thumbnail = ImageOps.fit(image, settings.USER_IMAGE_SIZE, Image.ANTIALIAS)
-            thumbnail.save(self.thumbnail_path)
+            thumbnail.save(buffer, format="PNG")
+            default_storage.save(self.thumbnail_name, ContentFile(buffer.getvalue()))
 
     @property
-    def thumbnail_path(self):
-        if self.avatar:
-            file, ext = os.path.splitext(self.avatar.path)
-            return '%s.thumbnail%s' % (file, ext)
+    def thumbnail_name(self):
+        if not self.avatar:
+            return
+        basename, _ = os.path.splitext(os.path.basename(self.avatar.name))
+        filename = '%s/thumbnail.%s.png' % (settings.USER_IMAGE_DIR, basename)
+        return filename
 
     @property
     def thumbnail_url(self):
-        if self.avatar:
-            file, ext = os.path.splitext(self.avatar.url)
-            return '%s.thumbnail%s' % (file, ext)
+        return default_storage.url(self.thumbnail_name)

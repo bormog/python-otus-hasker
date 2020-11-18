@@ -7,6 +7,7 @@ from PIL import Image
 from django.core.files.base import File
 from django.test import TestCase, override_settings
 from django.urls import reverse_lazy
+from django.core.files.storage import default_storage
 
 from users.models import UserProfile
 
@@ -52,5 +53,5 @@ class TestModels(TestCase):
         user = UserProfile.objects.create_user('foobar', 'foobar@foobar.com',
                                                'foobar',
                                                avatar=get_image_file())
-        self.assertTrue(os.path.exists(user.avatar.path))
-        self.assertTrue(os.path.exists(user.thumbnail_path))
+        self.assertTrue(default_storage.exists(user.avatar.name))
+        self.assertTrue(default_storage.exists(user.thumbnail_name))

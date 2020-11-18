@@ -10,6 +10,7 @@ services:
 
 env:
   secret_key=foobar
+  USE_AS3=0
   DATABASE_URL=postgres://postgres@localhost/travisdb
 
 install:
