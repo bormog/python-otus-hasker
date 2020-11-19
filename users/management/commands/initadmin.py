@@ -21,6 +21,7 @@ class Command(BaseCommand):
         exists = UserProfile.objects.filter(email=email, username=username).exists()
         if exists:
             self.stdout.write('User already exists')
+            return
 
         try:
             UserProfile.objects.create_superuser(
