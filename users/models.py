@@ -13,6 +13,7 @@ class UserProfile(AbstractUser):
     email = models.EmailField(unique=True)
     avatar = models.ImageField(upload_to=settings.USER_IMAGE_DIR)
 
+    # todo resize image only if user.created or image field has been updated
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
         if self.avatar:

@@ -7,6 +7,7 @@ from django.core.files.base import File
 from django.test import TestCase, override_settings
 from django.urls import reverse_lazy
 from django.core.files.storage import default_storage
+from django.db.utils import IntegrityError
 
 from users.models import UserProfile
 
@@ -54,3 +55,24 @@ class TestModels(TestCase):
                                                avatar=get_image_file())
         self.assertTrue(default_storage.exists(user.avatar.name))
         self.assertTrue(default_storage.exists(user.thumbnail_name))
+
+    def test_user_has_unique_email(self):
+        user = UserProfile.objects.create_user('foobar', 'foobar@foobar.com',
+                                               'foobar',
+                                               avatar=get_image_file())
+
+        with self.assertRaises(IntegrityError):
+            UserProfile.objects.create_user('another_user', 'foobar@foobar.com',
+                                            'foobar',
+                                            avatar=get_image_file())
+
+    def test_user_has_unique_username(self):
+        user = UserProfile.objects.create_user('foobar', 'foobar@foobar.com',
+                                               'foobar',
+                                               avatar=get_image_file())
+
+        with self.assertRaises(IntegrityError):
+            UserProfile.objects.create_user('foobar', 'another@foobar.com',
+                                            'foobar',
+                                            avatar=get_image_file())
+
