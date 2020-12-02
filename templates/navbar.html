@@ -2,6 +2,7 @@
 {% url 'users:logout' as logout %}
 {% url 'users:login' as login %}
 {% url 'users:register' as register %}
+{% load static %}
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/">Hasker</a>
@@ -20,7 +21,9 @@
         <div class="navbar-nav ml-3">
             <a class="nav-link {% if request.path == profile %}active{% endif %}" href="{{ profile }}">
                 {% if request.user.avatar %}
-                <img src="{{ request.user.thumbnail_url }}" style="width:20px" class="rounded rounded-lg"/>
+                <img src="{{ request.user.thumbnail_url }}" class="user-avatar-extra-small rounded rounded-lg"/>
+                {% else %}
+                <img src="{% static 'users/img/placeholder.png' %}" class="user-avatar-extra-small rounded rounded-lg"/>
                 {% endif %}
                 {{ request.user.username }}
             </a>

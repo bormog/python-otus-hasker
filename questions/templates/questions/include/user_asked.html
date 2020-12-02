@@ -1,6 +1,9 @@
+{% load static %}
 <div>
     {% if question.user.avatar %}
-    <img src="{{ question.user.thumbnail_url }}" style="width:32px" class="rounded rounded-lg"/>
+    <img src="{{ question.user.thumbnail_url }}" class="user-avatar-small rounded rounded-lg" />
+    {% else %}
+    <img src="{% static 'users/img/placeholder.png' %}" class="user-avatar-small rounded rounded-lg" />
     {% endif %}
     <div>
         <small><span class="text-info">{{ question.user.username }}</span> asked
