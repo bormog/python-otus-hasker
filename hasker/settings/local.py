@@ -15,8 +15,6 @@ MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-ROOT_URLCONF = 'hasker.urls.local'
-
 # Disable Auth Password Validators
 AUTH_PASSWORD_VALIDATORS = []
 

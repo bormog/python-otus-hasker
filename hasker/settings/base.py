@@ -48,7 +48,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = ''
+ROOT_URLCONF = 'hasker.urls'
 
 TEMPLATES = [
     {
