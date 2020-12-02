@@ -144,7 +144,7 @@ class QuestionDetail(View):
         try:
             send_mail(**kwargs)
             logger.info('Email to %s successfully sent' % question.user.email)
-        except Exception as e:
+        except Exception:
             logger.exception('Email to %s was failed' % question.user.email)
 
 
