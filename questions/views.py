@@ -16,10 +16,6 @@ from .models import Question, Answer
 logger = logging.getLogger(__name__)
 
 
-def handler_404(request, exception):
-    return render(request, 'questions/404.html', status=404)
-
-
 class QuestionList(ListView):
     paginate_by = settings.QUESTIONS_PER_PAGE
     model = Question

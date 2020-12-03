@@ -17,4 +17,6 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-handler404 = 'questions.views.handler_404'
+handler404 = 'views.handler_404'
+handler500 = 'views.handler_500'
+
