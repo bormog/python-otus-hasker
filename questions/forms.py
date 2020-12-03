@@ -13,8 +13,7 @@ class CommaSeparatedTextField(forms.Field):
             values = [i.lower() for i in map(str.strip, value.split(',')) if i]
             if len(values) <= 3:
                 for tag_name in values:
-                    tag, created = Tag.objects.get_or_create(name=tag_name)
-                    tags.append(tag)
+                    tags.append(Tag.objects.get_or_create(name=tag_name)[0])
                 return tags
             else:
                 raise ValidationError('Max 3 tags is allowed')
