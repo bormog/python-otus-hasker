@@ -155,4 +155,4 @@ class QuestionAnswerAward(LoginRequiredMixin, View):
                 answer.save()
             except Answer.DoesNotExist:
                 pass
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return redirect(request.META.get('HTTP_REFERER'))

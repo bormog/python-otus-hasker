@@ -1,6 +1,5 @@
 {% extends  'layout.html' %}
 {% load url_replace %}
-{% load paginate %}
 
 {% block title %} Questions {% endblock %}
 
@@ -39,7 +38,7 @@
 <!-- paginator -->
 <div class="row">
     <div class="col">
-        {% paginate %}
+        {% include 'paginator.html' %}
     </div>
 </div>
 
