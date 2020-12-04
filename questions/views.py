@@ -1,16 +1,15 @@
 import logging
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView, CreateView
 
 from .forms import QuestionAddForm, AnswerAddForm
 from .models import Question, Answer
+from .utils import send_email_about_new_answer
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +108,7 @@ class QuestionDetail(View):
             answer.question = question
             answer.user = request.user
             answer.save()
-            self.send_email_about_new_answer(answer, question)
+            send_email_about_new_answer(self.request, answer, question)
             return redirect(reverse_lazy('questions:detail', kwargs={'pk': pk}))
 
         ctx = dict()
@@ -118,40 +117,10 @@ class QuestionDetail(View):
         ctx['form'] = self.form_class()
         return render(request, self.template_name, ctx)
 
-    def send_email_about_new_answer(self, answer, question):
-        ctx = {
-            'author_username': question.user.username,
-            'user_username': answer.user.username,
-            'question': question,
-            'question_link': self.request.build_absolute_uri(
-                reverse_lazy('questions:detail', kwargs={'pk': question.pk}))
-        }
-
-        html_body = render_to_string('questions/emails/new_answer.html', ctx)
-        txt_body = render_to_string('questions/emails/new_answer.txt', ctx)
-        kwargs = {
-            'subject': 'New answer to your question received',
-            'from_email': settings.DEFAULT_FROM_EMAIL,
-            'recipient_list': [question.user.email],
-            'message': txt_body,
-            'html_message': html_body
-        }
-        try:
-            send_mail(**kwargs)
-            logger.info('Email to %s successfully sent' % question.user.email)
-        except Exception:
-            logger.exception('Email to %s was failed' % question.user.email)
-
 
 class QuestionAnswerAward(LoginRequiredMixin, View):
 
     def get(self, request, pk, answer_id):
-        is_owned_by_current_user = Question.objects.filter(pk=pk, user=request.user).exists()
-        if is_owned_by_current_user:
-            try:
-                answer = Answer.objects.get(pk=answer_id, question_id=pk)
-                answer.is_right = not answer.is_right
-                answer.save()
-            except Answer.DoesNotExist:
-                pass
+        Answer.objects.filter(pk=answer_id, question_id=pk, question__user=request.user).\
+            update(is_right=Q(is_right=False))
         return redirect(request.META.get('HTTP_REFERER'))
