@@ -17,10 +17,6 @@ MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
 # Disable Auth Password Validators
 AUTH_PASSWORD_VALIDATORS = []
 
