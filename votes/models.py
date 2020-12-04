@@ -21,25 +21,24 @@ class Vote(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     vote = models.SmallIntegerField(choices=VOTE_CHOICES)
 
-
-def on_vote_change_callback(vote):
-    content_type = ContentType.objects.get(pk=vote.content_type.pk)
-    related_obj = content_type.get_object_for_this_type(pk=vote.object_id)
-    rank = Vote.objects.filter(content_type=vote.content_type, object_id=vote.object_id). \
-        aggregate(rank=Sum('vote'))['rank']
-    related_obj.update_rank(rank)
+    def on_vote_change(self):
+        content_type = ContentType.objects.get(pk=self.content_type.pk)
+        related_obj = content_type.get_object_for_this_type(pk=self.object_id)
+        rank = Vote.objects.filter(content_type=self.content_type, object_id=self.object_id). \
+            aggregate(rank=Sum('vote'))['rank']
+        related_obj.update_rank(rank)
 
 
 @receiver(post_save, sender=Vote)
 def after_like_save_callback(sender, **kwargs):
     vote_obj = kwargs['instance']
-    on_vote_change_callback(vote_obj)
+    vote_obj.on_vote_change()
 
 
 @receiver(post_delete, sender=Vote)
 def after_like_delete_callback(sender, **kwargs):
     vote_obj = kwargs['instance']
-    on_vote_change_callback(vote_obj)
+    vote_obj.on_vote_change()
 
 
 class RankedVoteModel(models.Model):
