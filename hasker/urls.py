@@ -19,4 +19,3 @@ if settings.DEBUG:
 
 handler404 = 'views.handler_404'
 handler500 = 'views.handler_500'
-

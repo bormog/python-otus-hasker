@@ -57,22 +57,13 @@ class TestModels(TestCase):
         self.assertTrue(default_storage.exists(user.thumbnail_name))
 
     def test_user_has_unique_email(self):
-        user = UserProfile.objects.create_user('foobar', 'foobar@foobar.com',
-                                               'foobar',
-                                               avatar=get_image_file())
+        UserProfile.objects.create_user('foobar', 'foobar@foobar.com', 'foobar', avatar=get_image_file())
 
         with self.assertRaises(IntegrityError):
-            UserProfile.objects.create_user('another_user', 'foobar@foobar.com',
-                                            'foobar',
-                                            avatar=get_image_file())
+            UserProfile.objects.create_user('another_user', 'foobar@foobar.com', 'foobar', avatar=get_image_file())
 
     def test_user_has_unique_username(self):
-        user = UserProfile.objects.create_user('foobar', 'foobar@foobar.com',
-                                               'foobar',
-                                               avatar=get_image_file())
+        UserProfile.objects.create_user('foobar', 'foobar@foobar.com', 'foobar', avatar=get_image_file())
 
         with self.assertRaises(IntegrityError):
-            UserProfile.objects.create_user('foobar', 'another@foobar.com',
-                                            'foobar',
-                                            avatar=get_image_file())
-
+            UserProfile.objects.create_user('foobar', 'another@foobar.com', 'foobar', avatar=get_image_file())

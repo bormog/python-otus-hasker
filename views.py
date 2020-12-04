@@ -7,4 +7,3 @@ def handler_404(request, exception):
 
 def handler_500(request, *args, **kwargs):
     return render(request, '500.html', status=500)
-
