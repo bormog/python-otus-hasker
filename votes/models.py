@@ -2,8 +2,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Sum
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
+
 
 from users.models import UserProfile
 
@@ -27,18 +26,6 @@ class Vote(models.Model):
         rank = Vote.objects.filter(content_type=self.content_type, object_id=self.object_id). \
             aggregate(rank=Sum('vote'))['rank']
         related_obj.update_rank(rank)
-
-
-@receiver(post_save, sender=Vote)
-def after_like_save_callback(sender, **kwargs):
-    vote_obj = kwargs['instance']
-    vote_obj.on_vote_change()
-
-
-@receiver(post_delete, sender=Vote)
-def after_like_delete_callback(sender, **kwargs):
-    vote_obj = kwargs['instance']
-    vote_obj.on_vote_change()
 
 
 class RankedVoteModel(models.Model):
