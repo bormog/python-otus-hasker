@@ -8,4 +8,7 @@ def model_name(value):
     if hasattr(value, 'model'):
         value = value.model
 
-    return value._meta.model_name
+    try:
+        return value._meta.model_name
+    except AttributeError:
+        pass
