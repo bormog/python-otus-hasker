@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.views.generic import View
 
@@ -29,6 +29,6 @@ class VoteView(LoginRequiredMixin, View):
         except LookupError:
             return HttpResponseBadRequest('Invalid object name')
         if request.path != request.META.get('HTTP_REFERER'):
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            return redirect(request.META.get('HTTP_REFERER'))
         else:
             return redirect('/')
