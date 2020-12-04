@@ -1,9 +1,9 @@
 from django.db import models
 from django.urls import reverse_lazy
 
-from .managers import QuestionRelationsManager
 from users.models import UserProfile
 from votes.models import RankedVoteModel
+from .managers import QuestionRelationsManager
 
 
 class Tag(models.Model):

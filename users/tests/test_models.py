@@ -1,9 +1,9 @@
 import shutil
 import tempfile
 
-from django.test import TestCase, override_settings
 from django.core.files.storage import default_storage
 from django.db.utils import IntegrityError
+from django.test import TestCase, override_settings
 
 from .fixtures import UserFactory
 

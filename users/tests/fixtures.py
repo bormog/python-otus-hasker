@@ -1,6 +1,6 @@
-import factory
 from io import BytesIO
 
+import factory
 from PIL import Image
 from django.core.files.base import File
 

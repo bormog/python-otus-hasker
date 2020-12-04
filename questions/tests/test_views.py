@@ -1,6 +1,6 @@
 from django.conf import settings
-from django.test import TestCase
 from django.shortcuts import reverse
+from django.test import TestCase
 
 from .fixtures import QuestionFactory, AnswerFactory
 
@@ -19,6 +19,3 @@ class TestQuestionView(TestCase):
         response = self.client.get(reverse('questions:detail', kwargs={'pk': question.pk}))
         self.assertIn('page_obj', response.context)
         self.assertEqual(settings.ANSWERS_PER_PAGE, len(response.context['page_obj'].object_list))
-
-
-
