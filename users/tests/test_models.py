@@ -32,4 +32,3 @@ class TestModels(TestCase):
         UserFactory.create(username='foobar')
         with self.assertRaises(IntegrityError):
             UserFactory.create(username='foobar')
-
